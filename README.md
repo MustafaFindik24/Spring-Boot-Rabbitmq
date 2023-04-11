@@ -24,3 +24,113 @@ RabbitMQ; mesajlaşma uygulamalarında kullanılan publisher - subscriber (produ
   Mesajların kalıcı veya geçici olarak saklanabileceği bir kuyruktur. Mesajlar consumer tarafından tüketilene kadar saklanırlar. Bir mesajın kuyrukta kalması ve RabbitMQ sunucusunun yeniden başlatılması durumunda bile verilerin korunması sağlanır.
 
 # 📌 Spring Boot Projesinde RabbitMQ Kullanımı
+
+* Bir Spring Boot projesi oluşturup pom.xml dosyasına RabbitMQ eklentisi eklenir.
+
+```xml
+ <dependency>
+     <groupId>org.springframework.boot</groupId>
+     <artifactId>spring-boot-starter-amqp</artifactId>
+ </dependency>
+```
+
+* RabbitMQ uygulaması Docker üzerinde çalıştırılacağı için docker-compose.yaml dosyası oluşturulur ve RabbitMQ uygulamasının çalışması sağlanır.
+
+```yaml
+version: '3.0'
+services:
+  springboot-rabbitmq:
+    image: rabbitmq:3.12-rc-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=mustafafindik
+      - RABBITMQ_DEFAULT_PASS=p@ssword
+```
+
+* application.properties dosyasının içerisine ilgili dependencyler ve projede kullanılacak olan valuelar eklenir.
+
+```properties
+spring.rabbitmq.host=localhost
+spring.rabbitmq.port=5672
+spring.rabbitmq.username=mustafafindik
+spring.rabbitmq.password=p@ssword
+
+springrabbitmq.rabbit.queue.name = mustafa-queue
+springrabbitmq.rabbit.routing.name = mustafa-routing
+springrabbitmq.rabbit.exchange.name = mustafa-exchange
+
+spring.datasource.url=jdbc:postgresql://localhost:5432/rabbitmq
+spring.datasource.username=postgres
+spring.datasource.password=123456
+spring.datasource.hikari.auto-commit=false
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=false
+```
+
+* Modelimizi oluşturduktan sonra config package ı altında gerekli konfigürasyonların tanımlanması için configuration sınıfı oluşturulur.
+
+```java
+@Configuration
+public class RabbitmqConfiguration {
+    @Value("${springrabbitmq.rabbit.queue.name}")
+    private String queueName;
+    @Value("${springrabbitmq.rabbit.routing.name}")
+    private String routingName;
+    @Value("${springrabbitmq.rabbit.exchange.name}")
+    private String exchangeName;
+    @Bean
+    public Queue queue() {
+        return new Queue(queueName);
+    }
+    @Bean
+    DirectExchange directExchange() {
+        return new DirectExchange(this.exchangeName);
+    }
+    @Bean
+    Binding binding() {
+        return BindingBuilder.bind(this.queue()).to(this.directExchange()).with(this.routingName);
+    }
+}
+```
+* Producer sınıfı oluşturulup Notification sınıfında serilize edilen veriyi RabbitTemplate aracılığıyla kuyruğa gönderim işlemi sağlanır.
+
+```java
+@Component
+@Slf4j
+public class NotificationProducer {
+    @Value("${springrabbitmq.rabbit.routing.name}")
+    private String routingName;
+    @Value("${springrabbitmq.rabbit.exchange.name}")
+    private String exchangeName;
+    private final RabbitTemplate rabbitTemplate;
+    public NotificationProducer(RabbitTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
+    public void sendToQueue(Notification notification) {
+        log.info("\nNotification Send ID : " + UUID.randomUUID());
+        rabbitTemplate.convertAndSend(exchangeName, routingName, notification);
+    }
+}
+```
+
+* Listener sınıfı içerisinde @RabbitListener kullanılarak kuyruğa gelen veriyi yakalayıp veritabanına kayıt işlemi sağlanır.
+
+```java
+@Component
+@Slf4j
+public class NotificationListener {
+    private final NotificationServiceImpl notificationService;
+
+    public NotificationListener(NotificationServiceImpl notificationService) {
+        this.notificationService = notificationService;
+    }
+    @RabbitListener(queues = {"${springrabbitmq.rabbit.queue.name}"})
+    public void handleMessage(Notification notification) {
+        log.info("Notification caught : " + notification.toString());
+        notificationService.saveNotify(notification);
+    }
+}
+```
