@@ -4,9 +4,19 @@ RabbitMQ, açık kaynaklı bir mesaj kuyruklama aracıdır. AMQP (Advanced Messa
 
 ![image](https://user-images.githubusercontent.com/91599453/231185467-7a5af602-f5f3-4eb8-acff-43370aa7e303.png)
 
+RabbitMQ; mesajlaşma uygulamalarında kullanılan publisher - subscriber (producer - consumer) modeli için exchange, binding ve kuyruk (queue) denilen kavramlardan oluşur. Bu türler mesajın hangi şekilde, ne formatta kuyruğa veya kuyruklara yazılacağını belirler. 
 
-![Rabbitmq](https://user-images.githubusercontent.com/91599453/231184325-6d5ccd10-08b8-485b-8d20-e8ef6cdb479b.png)
+🎯 1. Exchange
+  Producer'dan gelen mesajları yönlendiren mekanizmaya verilen addır. Birden fazla exchange türü mevcuttur.
+  - Direct Exchange : Gelen mesajı ilgili routing key'e göre kuyruğa yönlendiren exchange türüdür.
+  - Topic Exchange : Gelen mesajı routing key pattern'ine göre kuyruğa yönlendiren türdür.
+  - Fanout Exchange : Mesajları bütün kuyruklara eşit şekilde dağıtan exchange türüdür.
+  - Header Exchange : Mesajları header bilgilerine göre ilgili queue'lere yönlendirir.
 
+🎯 2. Bindings
+  Exchange ile kuyruk arasındaki bağlantıyı sağlayan ara katmandır. Bindings, exchange türüne ve routing key'e bağımlı şekilde oluşturulur. Tek yönlü olarak mesajın kuyruğa aktarımı sağlanır.
 
+🎯 3. Queue
+  Mesajların kalıcı veya geçici olarak saklanabileceği bir kuyruktur. Mesajlar consumer tarafından tüketilene kadar saklanırlar. Bir mesajın kuyrukta kalması ve RabbitMQ sunucusunun yeniden başlatılması durumunda bile verilerin korunması sağlanır.
 
 # 📌 Spring Boot Projesinde RabbitMQ Kullanımı
