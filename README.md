@@ -6,6 +6,8 @@ RabbitMQ, açık kaynaklı bir mesaj kuyruklama aracıdır. AMQP (Advanced Messa
 
 RabbitMQ; mesajlaşma uygulamalarında kullanılan publisher - subscriber (producer - consumer) modeli için exchange, binding ve kuyruk (queue) denilen kavramlardan oluşur. Bu türler mesajın hangi şekilde, ne formatta kuyruğa veya kuyruklara yazılacağını belirler. 
 
+![Rabbitmq-exchanges-topic-fanout-direct](https://user-images.githubusercontent.com/91599453/231192496-53bddec3-7b1a-401e-aab0-cedc0d6161f8.png)
+
 🎯 1. Exchange
   Producer'dan gelen mesajları yönlendiren mekanizmaya verilen addır. Birden fazla exchange türü mevcuttur.
   - Direct Exchange : Gelen mesajı ilgili routing key'e göre kuyruğa yönlendiren exchange türüdür.
