@@ -1,0 +1,10 @@
+version: '3.0'
+services:
+  springboot-rabbitmq:
+    image: rabbitmq:3.12-rc-management
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_DEFAULT_USER=mustafafindik
+      - RABBITMQ_DEFAULT_PASS=p@ssword
