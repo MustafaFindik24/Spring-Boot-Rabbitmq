@@ -134,3 +134,19 @@ public class NotificationListener {
     }
 }
 ```
+* Spring Boot uygulamasını çalıştırdıktan sonra container olarak çalışan RabbitMQ'ya erişim için http://localhost:15672/ adresine gidilir. Authentication işlemi sonrası karşımıza böyle bir ekran çıkacaktır.
+
+![image](https://user-images.githubusercontent.com/91599453/231457887-63823e25-1a26-4742-9b75-fd08225e3b0d.png)
+
+* Mesajımızı Json formatında Postman üzerinden localhost:8080/notification adresine istek attığımızda uygulama içerisindeki console ekranına bastırılan loglar görülecektir. 
+
+![image](https://user-images.githubusercontent.com/91599453/231458729-950b30fd-aa27-48ca-af1f-1a0916dfbfa7.png)
+
+* RabbitMQ üzerinden Queues kısmına geldiğimizde ise yolladığımız mesajın kuyruk üzerindeki incelemesi gerçekleştirilebilir.
+
+![image](https://user-images.githubusercontent.com/91599453/231459031-e9f4e9e3-084b-4ae9-8b0a-1ad050f28a8c.png)
+
+* Kuyruktan gelen veri veritabanına kayıt edilmiş şekilde gözükecektir.
+
+![image](https://user-images.githubusercontent.com/91599453/231459383-b87a3f40-7775-4fd4-bc61-deaa9e9d12fa.png)
+
